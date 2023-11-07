@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 comments::usage (){
     local __doc__
     read -r -d '' __doc__ <<-'EOM'
@@ -13,53 +12,38 @@ comments::usage (){
         Options:
             -c,--comment         Comment lines.
             -u,--uncomment       Uncomment lines.
-            -s,--comment-string  Use this char as comments [default: '# '].
+            -s,--comment-string  Use this char as comments [default: '#'].
 EOM
 
     printf '%s\n' "${__doc__}"
 }
 
-comments::main (){
+comments::main() {
+    local line
+    local ADDED_COMMENT="${COMMENT_STRING}"
+
+    if ! ${COMMENT}; then
+        ADDED_COMMENT=""
+    fi
 
     while IFS= read -r line; do
-        already_commented=false
 
-        for ((i=0; i < "${#line}"; i++));do
+        [[ "${line}" =~ ^([' '$'\t']+)?("${COMMENT_STRING}")?(.*) ]]
 
-            case "${line:${i}:1}" in
+        LINE_PREFIX="${BASH_REMATCH[1]}"
+        # LINE_COMMENT_STRINT="${BASH_REMATCH[2]}" # <- I dont need this one, is here just for reference.
+        LINE_SUFFIX="${BASH_REMATCH[3]}"
 
-                 $'\t' | " " ) # Encrease "$i" if char is tab or space.
-                    ;;
-
-                \#)            # Already commented.
-                    already_commented=true
-                    break
-                    ;;
-
-                *)             # Stop if you find any other.
-                    break
-                    ;;
-
-            esac
-
-        done
-
-        if $COMMENT; then
-            prefix=""
-            ! ${already_commented} && prefix="${line:0:${i}}${COMMENT_STRING}"
-            suffix="${line:${i}:${#line}}"
-        fi
-
-        if ! $COMMENT; then
-            prefix=""            
-        fi
-  
-    done
+        printf '%s%s%s\n' \
+            "${LINE_PREFIX}" \
+            "${ADDED_COMMENT}" \
+            "${LINE_SUFFIX}"
+        
+    done 
 
 }
 
-
-COMMENT_STRING='# '
+COMMENT_STRING='#'
 
 [ "${#}" -eq 0 ] && {
     comments::usage
@@ -94,4 +78,4 @@ while [[ "${#}" -gt 0 ]];do
 done
 
 comments::main
-
+exit 0
