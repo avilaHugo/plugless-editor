@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
 
 comments::usage (){
     local __doc__
-    cat <<-'EOF'
-	Comment or Uncomment lines from stdin
+    read -r -d '' __doc__ <<-'EOM'
+        Comment or Uncomment lines from stdin
 
-	Usage:
-		comments.sh ( -c | -u ) [ -s <string> ] < lines_to_comment.txt 
-		comments.sh ( --comment | --uncomment ) [ --comment-string <string> ] < lines_to_comment.txt
+        Usage:
+            comments.sh ( -c | -u ) [ -s <string> ] < lines_to_comment.txt 
+            comments.sh ( --comment | --uncomment ) [ --comment-string <string> ] < lines_to_comment.txt
 
-	Options:
-        -c,--comment         Comment lines.
-        -u,--uncomment       Uncomment lines.
-        -s,--comment-string  Use this char as comments [default: '# ']. 
-EOF
+        Options:
+            -c,--comment         Comment lines.
+            -u,--uncomment       Uncomment lines.
+            -s,--comment-string  Use this char as comments [default: '# '].
+EOM
 
+    printf '%s\n' "${__doc__}"
 }
 
 comments::main (){
@@ -61,7 +61,10 @@ comments::main (){
 
 COMMENT_STRING='# '
 
-[ "${#}" -eq 0 ] && comments::usage
+[ "${#}" -eq 0 ] && {
+    comments::usage
+    exit 1
+}
 
 while [[ "${#}" -gt 0 ]];do
 
@@ -83,6 +86,7 @@ while [[ "${#}" -gt 0 ]];do
         *)
             echo "Unknown Command: ${1}" >&2
             comments::usage 
+            exit 1
             ;;
     esac
     shift
