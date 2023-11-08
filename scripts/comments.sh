@@ -6,76 +6,44 @@ comments::usage (){
         Comment or Uncomment lines from stdin
 
         Usage:
-            comments.sh ( -c | -u ) [ -s <string> ] < lines_to_comment.txt 
-            comments.sh ( --comment | --uncomment ) [ --comment-string <string> ] < lines_to_comment.txt
+            comments.sh <COMMENT_STRING> < lines_to_comment.txt 
 
         Options:
-            -c,--comment         Comment lines.
-            -u,--uncomment       Uncomment lines.
-            -s,--comment-string  Use this char as comments [default: '#'].
+            <COMMENT_STRING>          Use this string as comment.
 EOM
 
     printf '%s\n' "${__doc__}"
 }
 
 comments::main() {
+    local comment_string="${1}"
     local line
-    local ADDED_COMMENT="${COMMENT_STRING}"
-
-    if ! ${COMMENT}; then
-        ADDED_COMMENT=""
-    fi
+    local line_prefix
+    local added_comment
+    local line_suffix
 
     while IFS= read -r line; do
+        
+        [[ "${line}" =~ ^([' '$'\t']+)?("${comment_string}"' '+?)?(.*) ]]
 
-        [[ "${line}" =~ ^([' '$'\t']+)?("${COMMENT_STRING}")?(.*) ]]
+        line_prefix="${BASH_REMATCH[1]}"
+        line_suffix="${BASH_REMATCH[3]}"
 
-        LINE_PREFIX="${BASH_REMATCH[1]}"
-        # LINE_COMMENT_STRINT="${BASH_REMATCH[2]}" # <- I dont need this one, is here just for reference.
-        LINE_SUFFIX="${BASH_REMATCH[3]}"
+        [[ "${#BASH_REMATCH[2]}" -eq 0 ]] \
+            && added_comment="${comment_string} " \
+            || added_comment=''
 
         printf '%s%s%s\n' \
-            "${LINE_PREFIX}" \
-            "${ADDED_COMMENT}" \
-            "${LINE_SUFFIX}"
+            "${line_prefix}" \
+            "${added_comment}" \
+            "${line_suffix}"
         
     done 
-
 }
 
-COMMENT_STRING='#'
+[[ ! "${#1}" -eq 0  ]] \
+    && comments::main "${1}" \
+    && exit 0
 
-[ "${#}" -eq 0 ] && {
-    comments::usage
-    exit 1
-}
-
-while [[ "${#}" -gt 0 ]];do
-
-    case "${1}" in
-
-        -c|--comment)
-            COMMENT=true
-            ;;
-
-        -u|--uncomment)
-            COMMENT=false
-            ;;
-
-        -s*|--comment_string=*)
-            shift
-            COMMENT_STRING="${1}"
-            ;;
-
-        *)
-            echo "Unknown Command: ${1}" >&2
-            comments::usage 
-            exit 1
-            ;;
-    esac
-    shift
-
-done
-
-comments::main
-exit 0
+comments::usage
+exit 1

@@ -1,0 +1,18 @@
+" #########################################
+" #    Plugless Editor: vim config        #
+" #########################################
+
+" #########################################
+" #    Functions                          #
+" #########################################
+function! Comments()
+    :.! $PLUGLESS_EDITOR_DIR . 'scripts/comments.sh' '\#'
+endfunction
+
+" #########################################
+" #    Key maps                           #
+" #########################################
+
+" Define a key mapping for Ctrl-/
+noremap <C-x> :call Comments()<CR>
+
