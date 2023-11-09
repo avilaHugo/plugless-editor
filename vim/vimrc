@@ -6,7 +6,7 @@
 " #    Functions                          #
 " #########################################
 function! Comments()
-    :.! $PLUGLESS_EDITOR_DIR . 'scripts/comments.sh' '\#'
+    :.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'
 endfunction
 
 " #########################################
@@ -14,5 +14,6 @@ endfunction
 " #########################################
 
 " Define a key mapping for Ctrl-/
-noremap <C-x> :call Comments()<CR>
+" Vim seems to return _ when i press / so i'm using that.
+noremap <C-_> :call Comments()<CR>
 
