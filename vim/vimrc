@@ -5,8 +5,8 @@
 " #########################################
 " #    Functions                          #
 " #########################################
-function! Comments()
-    :.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'
+function! Comments() range 
+    :'<,'>.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'
 endfunction
 
 " #########################################
