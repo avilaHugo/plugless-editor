@@ -5,15 +5,11 @@
 " #########################################
 " #    Functions                          #
 " #########################################
-function! Comments() range 
-    :'<,'>.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'
-endfunction
 
 " #########################################
 " #    Key maps                           #
 " #########################################
 
-" Define a key mapping for Ctrl-/
-" Vim seems to return _ when i press / so i'm using that.
-noremap <C-_> :call Comments()<CR>
-
+" ComeDefine a key mapping for Ctrl-_
+nnoremap <C-_> :'<,'>.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
+xnoremap <C-_> :.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
