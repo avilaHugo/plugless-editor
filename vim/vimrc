@@ -32,6 +32,22 @@ function! ReplaceUnderSelection(new_string)
 endfunction
 
 
+
+" #########################################
+" #    Commands                           #
+" #########################################
+
+" Enclosing 
+command! -range -nargs=1 E :call ReplaceUnderSelection(Enclose(@*, <q-args>))
+command! -range -nargs=1 Enclose :E <args>
+
+" Enclosing variables (shell script)
+command! -range Bev :call ReplaceUnderSelection('$' . Enclose(@*, '{'))
+command! -range BashEncloseVariable :Bev
+command! -range Bevq :call ReplaceUnderSelection(Enclose('$' . Enclose(@*, '{'), '"'))
+command! -range BashEncloseVariableQuoted :Bevq
+
+
 " #########################################
 " #    Key maps                           #
 " #########################################
@@ -40,9 +56,13 @@ endfunction
 nnoremap <C-_> :'<,'>.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
 xnoremap <C-_> :.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
 
-" Enclosing 
-command! -range -nargs=1 E :call ReplaceUnderSelection(Enclose(@*, <q-args>))
-command! -range -nargs=1 EncloseInner :E <args>
+nnoremap <Leader>w viw
+nnoremap <Leader>W viW
+
+xnoremap <Leader>e  :E<Space>
+xnoremap <Leader>vv :Bev<CR>
+xnoremap <Leader>v  :Bevq<CR>
+
 
 
 " #########################################
@@ -63,6 +83,4 @@ inoreabbrev fb for VAR in ITERABLE ;do<CR>done<Esc>k/VAR<CR>
 inoreabbrev fc for (i=0; i; i++);do<CR>done<Esc>k/i;<CR>l
 inoreabbrev ak awk '{print }'<Esc>hi
 inoreabbrev awksum awk '{sum+=$0} END {print sum}'
-
-
 
