@@ -6,6 +6,32 @@
 " #    Functions                          #
 " #########################################
 
+function Enclose(word, enclose_char)
+    let command = printf("${PLUGLESS_EDITOR_DIR}/scripts/enclose.sh %s %s", shellescape(a:word), shellescape(a:enclose_char))
+    return system(command)
+endfunction
+
+function! ReplaceUnderSelection(new_string)
+    " Save the current register to avoid overwriting user's clipboard
+    let reg_save = getreg('"')
+
+    " Save the characters under selection to register a
+    normal! gv"ay
+
+    " Set reg a to new_string
+    let @a=a:new_string
+
+    " Replace the text under the selection with the modified text
+    execute "normal! gv\"ap"
+
+    " Restore the original register content
+    call setreg('"', reg_save)
+
+    " Clear the register a
+    let @a = ''
+endfunction
+
+
 " #########################################
 " #    Key maps                           #
 " #########################################
@@ -13,3 +39,30 @@
 " ComeDefine a key mapping for Ctrl-_
 nnoremap <C-_> :'<,'>.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
 xnoremap <C-_> :.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
+
+" Enclosing 
+command! -range -nargs=1 E :call ReplaceUnderSelection(Enclose(@*, <q-args>))
+command! -range -nargs=1 EncloseInner :E <args>
+
+
+" #########################################
+" #    ABBREVS                            #
+" #########################################
+
+" Magic groups 
+inoreabbrev \w [[:alpha:]]
+inoreabbrev \d [[:digit:]]
+inoreabbrev \s [[:space:]]
+inoreabbrev alnum [[:alnum:]]
+
+" Shell Script completions ()
+inoreabbrev #! #!/usr/bin/env<Space>
+inoreabbrev wr while read -r;do<CR>done<Esc>k$F;i<Space>VAR<Space><Esc>B
+inoreabbrev wrI while IFS='' read -r;do<CR>done<Esc>k$F;i<Space>VAR<Space><Esc>0/IFS<CR>5li
+inoreabbrev fb for VAR in ITERABLE ;do<CR>done<Esc>k/VAR<CR>
+inoreabbrev fc for (i=0; i; i++);do<CR>done<Esc>k/i;<CR>l
+inoreabbrev ak awk '{print }'<Esc>hi
+inoreabbrev awksum awk '{sum+=$0} END {print sum}'
+
+
+
