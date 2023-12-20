@@ -6,9 +6,13 @@
 " #    Functions                          #
 " #########################################
 
-function Enclose(word, enclose_char)
+function! Enclose(word, enclose_char)
     let command = printf("${PLUGLESS_EDITOR_DIR}/scripts/enclose.sh %s %s", shellescape(a:word), shellescape(a:enclose_char))
     return system(command)
+endfunction
+
+function! GetVisualSelection()
+    return getline("'<")[getpos("'<")[2]-1:getpos("'>")[2]-1]
 endfunction
 
 function! ReplaceUnderSelection(new_string)
@@ -31,6 +35,10 @@ function! ReplaceUnderSelection(new_string)
     let @a = ''
 endfunction
 
+function! GetNCharsFromUser(n_chars_to_take)
+    let l:captured_user_input = ''
+    while len( captured_user_input < a:n_chars_to_take )
+endfunction
 
 
 " #########################################
@@ -38,14 +46,8 @@ endfunction
 " #########################################
 
 " Enclosing 
-command! -range -nargs=1 E :call ReplaceUnderSelection(Enclose(@*, <q-args>))
-command! -range -nargs=1 Enclose :E <args>
-
-" Enclosing variables (shell script)
-command! -range Bev :call ReplaceUnderSelection('$' . Enclose(@*, '{'))
-command! -range BashEncloseVariable :Bev
-command! -range Bevq :call ReplaceUnderSelection(Enclose('$' . Enclose(@*, '{'), '"'))
-command! -range BashEncloseVariableQuoted :Bevq
+command! -range -nargs=? E :call ReplaceUnderSelection(Enclose(GetVisualSelection(), <q-args>))
+command! -range -nargs=? Enclose :E <args>
 
 
 " #########################################
@@ -60,8 +62,8 @@ nnoremap <Leader>w viw
 nnoremap <Leader>W viW
 
 xnoremap <Leader>e  :E<Space>
-xnoremap <Leader>vv :Bev<CR>
-xnoremap <Leader>v  :Bevq<CR>
+xnoremap <Leader>v :call ReplaceUnderSelection(Enclose(printf("${%s}", GetVisualSelection()), '"'))<CR>
+xnoremap <Leader>vv :call ReplaceUnderSelection(printf("${%s}", GetVisualSelection()))<CR>
 
 
 
