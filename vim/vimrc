@@ -37,7 +37,12 @@ endfunction
 
 function! GetNCharsFromUser(n_chars_to_take)
     let l:captured_user_input = ''
-    while len( captured_user_input < a:n_chars_to_take )
+
+    while len(l:captured_user_input) < a:n_chars_to_take
+        let l:captured_user_input .= nr2char(getchar())
+    endwhile
+
+    return l:captured_user_input
 endfunction
 
 
@@ -61,11 +66,9 @@ xnoremap <C-_> :.! "${PLUGLESS_EDITOR_DIR}/scripts/comments.sh" '\#'<CR>
 nnoremap <Leader>w viw
 nnoremap <Leader>W viW
 
-xnoremap <Leader>e  :E<Space>
+xnoremap <Leader>e :call ReplaceUnderSelection(Enclose(GetVisualSelection(), GetNCharsFromUser(1)))<CR>
 xnoremap <Leader>v :call ReplaceUnderSelection(Enclose(printf("${%s}", GetVisualSelection()), '"'))<CR>
 xnoremap <Leader>vv :call ReplaceUnderSelection(printf("${%s}", GetVisualSelection()))<CR>
-
-
 
 " #########################################
 " #    ABBREVS                            #
