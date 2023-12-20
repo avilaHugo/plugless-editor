@@ -70,6 +70,8 @@ xnoremap <Leader>e :call ReplaceUnderSelection(Enclose(GetVisualSelection(), Get
 xnoremap <Leader>v :call ReplaceUnderSelection(Enclose(printf("${%s}", GetVisualSelection()), '"'))<CR>
 xnoremap <Leader>vv :call ReplaceUnderSelection(printf("${%s}", GetVisualSelection()))<CR>
 
+nnoremap <Leader>p g_a<Space>\<CR>\|<Space>
+
 " #########################################
 " #    ABBREVS                            #
 " #########################################
